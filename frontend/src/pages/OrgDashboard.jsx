@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 export default function OrgDashboard() {
     const { user } = useAuth();
+    const navigate = useNavigate();
+
     const [applications, setApplications] = useState([]);
     const [opportunitiesCount, setOpportunitiesCount] = useState(0);
 
@@ -24,24 +27,38 @@ export default function OrgDashboard() {
         }
     };
 
-    const handleCompletion = async (id, status) => {
-        const feedback = prompt("Enter feedback:");
+    /* ==============================
+       APPROVE / REJECT
+    =============================== */
 
-        if (!feedback) {
-            alert("Feedback required");
-            return;
-        }
-
+    const updateStatus = async (id, status) => {
         try {
-            await api.patch(`/opportunities/applications/${id}/complete`, {
-                completed: status,
-                feedback
+            await api.patch(`/opportunities/applications/${id}/status`, {
+                status
             });
 
-            alert("Performance recorded");
+            toast.success(`Application ${status}`);
             fetchData();
         } catch (err) {
-            alert("Error updating performance");
+            toast.error("Failed to update status");
+        }
+    };
+
+    /* ==============================
+       COMPLETE / INCOMPLETE
+       → Redirect to feedback page
+    =============================== */
+
+    const handleCompletion = async (id, completedStatus) => {
+        try {
+            await api.patch(`/opportunities/applications/${id}/complete`, {
+                completed: completedStatus
+            });
+
+            // Redirect to feedback page
+            navigate(`/feedback/${id}`);
+        } catch (err) {
+            toast.error("Error updating completion status");
         }
     };
 
@@ -65,7 +82,6 @@ export default function OrgDashboard() {
                 <StatCard title="Rejected" value={rejected} color="text-red-400" />
             </div>
 
-            {/* Recent Applications */}
             <h2 className="text-xl font-semibold mt-10 mb-4">
                 Recent Applications
             </h2>
@@ -88,27 +104,43 @@ export default function OrgDashboard() {
                             Opportunity: {app.opportunities?.title}
                         </p>
 
-                        {/* Status */}
+                        {/* STATUS TEXT */}
                         <p
                             className={`mt-2 font-medium ${app.status === "approved"
-                                ? "text-green-400"
-                                : app.status === "rejected"
-                                    ? "text-red-400"
-                                    : "text-yellow-400"
+                                    ? "text-green-400"
+                                    : app.status === "rejected"
+                                        ? "text-red-400"
+                                        : "text-yellow-400"
                                 }`}
                         >
                             {app.status}
                         </p>
 
-                        {/* Completed Badge */}
-                        {app.completed && (
-                            <span className="inline-block mt-2 px-3 py-1 bg-green-600 text-white rounded text-sm">
-                                Completed
-                            </span>
+                        {/* =======================
+                            APPROVE / REJECT
+                        ======================== */}
+                        {app.status === "pending" && (
+                            <div className="flex gap-3 mt-3">
+                                <button
+                                    onClick={() => updateStatus(app.id, "approved")}
+                                    className="bg-green-600 px-4 py-2 rounded-lg"
+                                >
+                                    Approve
+                                </button>
+
+                                <button
+                                    onClick={() => updateStatus(app.id, "rejected")}
+                                    className="bg-red-600 px-4 py-2 rounded-lg"
+                                >
+                                    Reject
+                                </button>
+                            </div>
                         )}
 
-                        {/* Mark as Completed Button */}
-                        {app.status === "approved" && !app.completed && (
+                        {/* =======================
+                            COMPLETE / INCOMPLETE
+                        ======================== */}
+                        {app.status === "approved" && (
                             <div className="flex gap-3 mt-3">
                                 <button
                                     onClick={() => handleCompletion(app.id, true)}
@@ -121,9 +153,16 @@ export default function OrgDashboard() {
                                     onClick={() => handleCompletion(app.id, false)}
                                     className="bg-red-600 px-4 py-2 rounded-lg"
                                 >
-                                    Not Complete
+                                    Incomplete
                                 </button>
                             </div>
+                        )}
+
+                        {/* COMPLETED BADGE */}
+                        {app.completed && (
+                            <span className="inline-block mt-2 px-3 py-1 bg-blue-600 text-white rounded text-sm">
+                                Performance Submitted
+                            </span>
                         )}
                     </div>
                 ))}
@@ -131,7 +170,6 @@ export default function OrgDashboard() {
         </div>
     );
 }
-
 
 function StatCard({ title, value, color }) {
     return (

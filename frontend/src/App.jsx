@@ -17,6 +17,7 @@ import ImpactReport from "./pages/ImpactReport";
 import Profile from "./pages/Profile";
 import MyApplications from "./pages/MyApplications";
 import { Toaster } from "react-hot-toast";
+import FeedbackPage from "./pages/FeedbackPage";
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -87,6 +88,7 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
+        <Route path="/feedback/:id" element={<FeedbackPage />} />
       </Routes>
     </div>
   );
