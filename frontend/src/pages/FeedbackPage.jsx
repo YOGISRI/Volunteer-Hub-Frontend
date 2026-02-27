@@ -1,98 +1,88 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import api from "../api/axios";
-import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
-export default function FeedbackPage() {
-  const { id } = useParams(); // application_id
-  const navigate = useNavigate();
-  const { user } = useAuth(); // organization
+export default function Feedbackpages() {
 
-  const [rating, setRating] = useState(5);
-  const [feedback, setFeedback] = useState("");
-  const [application, setApplication] = useState(null);
+    const { id } = useParams();                // 👈 GET application ID
+    const [searchParams] = useSearchParams();  // 👈 GET query param
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchApplication();
-  }, []);
+    const status = searchParams.get("status"); // 👈 complete / incomplete
 
-  const fetchApplication = async () => {
-    try {
-      const res = await api.get(`/opportunities/applications/${id}`);
-      setApplication(res.data);
-    } catch (err) {
-      toast.error("Failed to load application");
-    }
-  };
+    const [feedback, setFeedback] = useState("");
+    const [rating, setRating] = useState(
+        status === "complete" ? 1 : -1
+    );
+    const [hours, setHours] = useState(0);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async () => {
+        try {
 
-    try {
-      await api.post("/ratings", {
-        volunteer_id: application.volunteer_id,
-        organization_id: user.id,
-        application_id: id,
-        rating,
-        feedback,
-      });
+            console.log("Application ID:", id);
+            console.log("Status:", status);
 
-      toast.success("Feedback submitted successfully");
-      navigate("/dashboard");
-    } catch (error) {
-      toast.error("Failed to submit feedback");
-    }
-  };
+            // 1️⃣ mark complete or incomplete
+            await api.patch(
+                `/opportunities/applications/${id}/complete`,
+                {
+                    completed: status === "complete",
+                    hours: Number(hours)
+                }
+            );
 
-  if (!application) return <div className="p-6">Loading...</div>;
+            // 2️⃣ submit rating
+            await api.post(
+                `/opportunities/applications/${id}/rate`,
+                {
+                    feedback,
+                    type: status === "complete" ? "positive" : "negative"
+                }
+            );
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <div className="bg-gray-800 p-8 rounded-xl w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-white">
-          Rate Volunteer
-        </h2>
+            toast.success("Performance submitted");
+            navigate("/dashboard");
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        } catch (err) {
+            console.error(err);
+            toast.error("Something went wrong");
+        }
+    };
 
-          <div>
-            <label className="block text-gray-400 mb-1">
-              Rating (1-5)
-            </label>
-            <input
-              type="number"
-              min="1"
-              max="5"
-              value={rating}
-              onChange={(e) => setRating(e.target.value)}
-              className="w-full p-2 rounded bg-gray-700 text-white"
-              required
-            />
-          </div>
+    return (
+        <div className="min-h-screen flex justify-center items-center bg-gray-900 text-white">
+            <div className="bg-gray-800 p-8 rounded-xl w-full max-w-md">
 
-          <div>
-            <label className="block text-gray-400 mb-1">
-              Feedback
-            </label>
-            <textarea
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              className="w-full p-2 rounded bg-gray-700 text-white"
-              rows="4"
-              required
-            />
-          </div>
+                <h2 className="text-2xl font-bold mb-6">
+                    {status === "complete"
+                        ? "Positive Feedback"
+                        : "Improvement Feedback"}
+                </h2>
+                <input
+                    type="number"
+                    className="w-full p-3 rounded bg-gray-700 mb-4"
+                    placeholder="Hours volunteered"
+                    value={hours}
+                    onChange={(e) => setHours(Number(e.target.value))}
+                />
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 py-2 rounded-lg text-white font-semibold hover:bg-blue-700 transition"
-          >
-            Submit Feedback
-          </button>
 
-        </form>
-      </div>
-    </div>
-  );
+                <textarea
+                    className="w-full p-3 rounded bg-gray-700 mb-4"
+                    placeholder="Write feedback..."
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                />
+
+                <button
+                    onClick={handleSubmit}
+                    className="w-full bg-blue-600 py-3 rounded"
+                >
+                    Submit
+                </button>
+
+            </div>
+        </div>
+    );
 }

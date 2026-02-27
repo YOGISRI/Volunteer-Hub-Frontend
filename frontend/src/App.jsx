@@ -18,6 +18,9 @@ import Profile from "./pages/Profile";
 import MyApplications from "./pages/MyApplications";
 import { Toaster } from "react-hot-toast";
 import FeedbackPage from "./pages/FeedbackPage";
+import CreateOpportunity from "./pages/CreateOpportunity";
+import EventCalendar from "./pages/EventCalendar";
+import Chat from "./pages/Chat";
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -88,7 +91,31 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route path="/feedback/:id" element={<FeedbackPage />} />
+        <Route
+          path="/feedback/:id"
+          element={
+            <ProtectedRoute role="organization">
+              <FeedbackPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create-opportunity"
+          element={
+            <ProtectedRoute role="organization">
+              <CreateOpportunity />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/calendar" element={<EventCalendar />} />
+        <Route
+          path="/chat/:userId"
+          element={
+            <ProtectedRoute>
+              <Chat />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

@@ -45,6 +45,12 @@ export default function Navbar() {
                                 >
                                     Logout
                                 </button>
+                                <Link
+                                    to="/calendar"
+                                    className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded-b-lg"
+                                >
+                                    Calendar
+                                </Link>
                             </div>
                         </div>
                     </>

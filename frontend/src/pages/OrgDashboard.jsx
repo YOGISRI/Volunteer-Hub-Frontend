@@ -33,14 +33,16 @@ export default function OrgDashboard() {
 
     const updateStatus = async (id, status) => {
         try {
-            await api.patch(`/opportunities/applications/${id}/status`, {
-                status
-            });
+            await api.patch(
+                `/opportunities/applications/${id}/status`,
+                { status }
+            );
 
             toast.success(`Application ${status}`);
             fetchData();
         } catch (err) {
-            toast.error("Failed to update status");
+            console.log("STATUS ERROR:", err.response?.data);
+            toast.error(err.response?.data?.error || "Failed to update status");
         }
     };
 
@@ -102,18 +104,32 @@ export default function OrgDashboard() {
 
                         <p className="mt-1 text-sm">
                             Opportunity: {app.opportunities?.title}
-                        </p>
+                        </p><br></br>
+                        <button
+                            onClick={() => navigate(`/chat/${app.volunteer_id}`)}
+                            className="bg-purple-600 px-4 py-2 rounded"
+                        >
+                            Message
+                        </button>
 
                         {/* STATUS TEXT */}
                         <p
-                            className={`mt-2 font-medium ${app.status === "approved"
-                                    ? "text-green-400"
-                                    : app.status === "rejected"
-                                        ? "text-red-400"
-                                        : "text-yellow-400"
+                            className={`mt-2 font-medium ${app.completed === true
+                                ? "text-green-400"
+                                : app.completed === false && app.status === "approved"
+                                    ? "text-red-400"
+                                    : app.status === "approved"
+                                        ? "text-green-400"
+                                        : app.status === "rejected"
+                                            ? "text-red-400"
+                                            : "text-yellow-400"
                                 }`}
                         >
-                            {app.status}
+                            {app.completed === true
+                                ? "Completed"
+                                : app.completed === false && app.status === "approved"
+                                    ? "Incomplete"
+                                    : app.status}
                         </p>
 
                         {/* =======================
@@ -140,29 +156,23 @@ export default function OrgDashboard() {
                         {/* =======================
                             COMPLETE / INCOMPLETE
                         ======================== */}
-                        {app.status === "approved" && (
+                        {app.status === "approved" && app.completed === false && (
                             <div className="flex gap-3 mt-3">
                                 <button
-                                    onClick={() => handleCompletion(app.id, true)}
-                                    className="bg-green-600 px-4 py-2 rounded-lg"
+                                    onClick={() => navigate(`/feedback/${app.id}?status=complete`)}
+                                    className="bg-green-600 px-4 py-2 rounded mr-2"
                                 >
                                     Complete
                                 </button>
 
                                 <button
-                                    onClick={() => handleCompletion(app.id, false)}
-                                    className="bg-red-600 px-4 py-2 rounded-lg"
+                                    onClick={() => navigate(`/feedback/${app.id}?status=incomplete`)}
+                                    className="bg-red-600 px-4 py-2 rounded"
                                 >
                                     Incomplete
                                 </button>
                             </div>
-                        )}
 
-                        {/* COMPLETED BADGE */}
-                        {app.completed && (
-                            <span className="inline-block mt-2 px-3 py-1 bg-blue-600 text-white rounded text-sm">
-                                Performance Submitted
-                            </span>
                         )}
                     </div>
                 ))}

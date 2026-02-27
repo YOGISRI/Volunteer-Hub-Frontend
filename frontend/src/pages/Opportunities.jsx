@@ -8,6 +8,7 @@ export default function Opportunities() {
     const [applications, setApplications] = useState([]);
     const [search, setSearch] = useState("");
     const { user } = useAuth();
+    const [location, setLocation] = useState("");
 
     useEffect(() => {
         fetchOpportunities();
@@ -18,8 +19,14 @@ export default function Opportunities() {
     }, [user]);
 
     const fetchOpportunities = async () => {
-        const res = await api.get("/opportunities");
-        setOpportunities(res.data);
+        try {
+            const res = await api.get(
+                `/opportunities?location=${location}&search=${search}`
+            );
+            setOpportunities(res.data);
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     const fetchMyApplications = async () => {
@@ -50,16 +57,34 @@ export default function Opportunities() {
             <h1 className="text-2xl font-bold mb-6">
                 Volunteer Opportunities
             </h1>
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
 
-            {/* 🔍 Search Bar */}
-            <input
-                type="text"
-                placeholder="Search opportunities..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="mb-6 p-2 w-full rounded bg-gray-800 border border-gray-700"
-            />
+                {/* Search by Title */}
+                <input
+                    type="text"
+                    placeholder="Search by title..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="p-3 rounded bg-gray-700 text-white w-full"
+                />
 
+                {/* Filter by Location */}
+                <input
+                    type="text"
+                    placeholder="Filter by location..."
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="p-3 rounded bg-gray-700 text-white w-full"
+                />
+
+                <button
+                    onClick={fetchOpportunities}
+                    className="bg-blue-600 px-6 rounded hover:bg-blue-700"
+                >
+                    Apply
+                </button>
+
+            </div>
             <div className="grid md:grid-cols-2 gap-6">
                 {opportunities
                     .filter((opp) =>
@@ -89,10 +114,10 @@ export default function Opportunities() {
                                             <button
                                                 disabled
                                                 className={`mt-4 px-4 py-2 rounded-lg ${status === "approved"
-                                                        ? "bg-green-600"
-                                                        : status === "rejected"
-                                                            ? "bg-red-600"
-                                                            : "bg-yellow-600"
+                                                    ? "bg-green-600"
+                                                    : status === "rejected"
+                                                        ? "bg-red-600"
+                                                        : "bg-yellow-600"
                                                     }`}
                                             >
                                                 {status.charAt(0).toUpperCase() +

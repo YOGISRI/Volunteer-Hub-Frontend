@@ -40,7 +40,13 @@ export default function MyApplications() {
                             <span className="text-yellow-400">
                                 {app.status || "Pending"}
                             </span>
-                        </p>
+                        </p><br></br>
+                        <button
+                            onClick={() => navigate(`/chat/${app.opportunities.organization_id}`)}
+                            className="bg-purple-600 px-4 py-2 rounded"
+                        >
+                            Message Org
+                        </button>
                     </div>
                 ))}
             </div>

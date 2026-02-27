@@ -69,8 +69,8 @@ export default function ChatBox({ room }) {
                     >
                         <div
                             className={`px-4 py-2 rounded-lg max-w-xs ${msg.sender === user.id
-                                    ? "bg-blue-500 text-white"
-                                    : "bg-gray-200 dark:bg-slate-700 dark:text-white"
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-200 dark:bg-slate-700 dark:text-white"
                                 }`}
                         >
                             {msg.message}
