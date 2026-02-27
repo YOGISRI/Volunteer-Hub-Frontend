@@ -240,4 +240,110 @@ router.patch("/notifications/:id/read", verifyToken, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+router.patch("/applications/:id/complete", verifyToken, async (req, res) => {
+  try {
+    if (req.user.role !== "organization") {
+      return res.status(403).json({ error: "Only organizations allowed" });
+    }
+
+    const { id } = req.params;
+    const { completed, feedback } = req.body; // true or false
+
+    if (!feedback) {
+      return res.status(400).json({ error: "Feedback required" });
+    }
+
+    const { data: app, error: fetchError } = await supabase
+      .from("applications")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    if (app.status !== "approved") {
+      return res.status(400).json({ error: "Application not approved" });
+    }
+
+    // Update completion
+    const { error: updateError } = await supabase
+      .from("applications")
+      .update({
+        completed,
+        completed_at: new Date()
+      })
+      .eq("id", id);
+
+    if (updateError) throw updateError;
+
+    // Rating logic
+    const ratingChange = completed ? 1 : -1;
+
+    // Insert rating record
+    await supabase.from("ratings").insert([{
+      volunteer_id: app.volunteer_id,
+      organization_id: req.user.id,
+      application_id: id,
+      rating: ratingChange,
+      feedback
+    }]);
+
+    res.json({ message: "Performance recorded" });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+router.post("/applications/:id/rate", verifyToken, async (req, res) => {
+  const { id } = req.params;
+  const { rating, feedback } = req.body;
+
+  const { data: app } = await supabase
+    .from("applications")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (!app.completed) {
+    return res.status(400).json({ error: "Event not completed yet" });
+  }
+
+  const { data, error } = await supabase
+    .from("ratings")
+    .insert([{
+      volunteer_id: app.volunteer_id,
+      organization_id: req.user.id,
+      application_id: id,
+      rating,
+      feedback
+    }])
+    .select()
+    .single();
+
+  if (error) return res.status(400).json({ error: error.message });
+
+  res.json(data);
+});
+// =============================
+// 8️⃣ GET VOLUNTEER TOTAL RATING
+// =============================
+router.get("/volunteer/:id/rating", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+      .from("ratings")
+      .select("rating")
+      .eq("volunteer_id", id);
+
+    if (error) throw error;
+
+    const totalRating = data.reduce((sum, r) => sum + r.rating, 0);
+
+    res.json({ rating: totalRating });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 export default router;
