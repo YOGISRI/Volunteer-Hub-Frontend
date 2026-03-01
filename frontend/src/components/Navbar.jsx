@@ -48,24 +48,30 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-gray-800 p-4 relative">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+    <nav className="bg-gray-800 px-4 py-3 relative z-50">
+      <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
 
         {/* LOGO */}
-        <h1 className="text-xl font-bold">
+        <h1 className="text-xl font-bold text-white">
           <Link to="/">VolunteerHub</Link>
         </h1>
 
         {/* MENU */}
-        <div className="flex flex-wrap gap-4 items-center text-sm">
+        <div className="flex flex-wrap items-center gap-4 text-sm">
 
           {user ? (
             <>
-              <Link to="/dashboard" className="text-gray-300 hover:text-white transition">
+              <Link
+                to="/dashboard"
+                className="text-gray-300 hover:text-white transition"
+              >
                 Dashboard
               </Link>
 
-              <Link to="/opportunities" className="text-gray-300 hover:text-white transition">
+              <Link
+                to="/opportunities"
+                className="text-gray-300 hover:text-white transition"
+              >
                 Opportunities
               </Link>
 
@@ -92,34 +98,35 @@ export default function Navbar() {
 
               <NotificationBell />
 
-              {/* PROFILE */}
+              {/* PROFILE AVATAR */}
               <div className="relative" ref={profileRef}>
                 <div
-                  onClick={() => setProfileOpen(prev => !prev)}
+                  onClick={() => setProfileOpen((prev) => !prev)}
                   className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold cursor-pointer"
                 >
                   {user?.name?.charAt(0).toUpperCase()}
                 </div>
 
-                {/* DESKTOP DROPDOWN */}
+                {/* DROPDOWN (WORKS FOR ALL SCREENS) */}
                 {profileOpen && (
-                  <div className="
-      absolute
-      top-12
-      right-2
-      sm:right-0
-      w-44
-      max-w-[calc(100vw-16px)]
-      bg-gray-800
-      rounded-lg
-      shadow-xl
-      border border-gray-700
-      z-50
-    ">
+                  <div
+                    className="
+                      absolute
+                      mt-3
+                      right-0
+                      w-44
+                      bg-gray-800
+                      rounded-lg
+                      shadow-xl
+                      border border-gray-700
+                      z-50
+                      overflow-hidden
+                    "
+                  >
                     <Link
                       to="/profile"
                       onClick={() => setProfileOpen(false)}
-                      className="block px-4 py-2 hover:bg-gray-700 rounded-t-lg"
+                      className="block px-4 py-2 hover:bg-gray-700 transition"
                     >
                       Profile
                     </Link>
@@ -127,7 +134,7 @@ export default function Navbar() {
                     <Link
                       to="/calendar"
                       onClick={() => setProfileOpen(false)}
-                      className="block px-4 py-2 hover:bg-gray-700"
+                      className="block px-4 py-2 hover:bg-gray-700 transition"
                     >
                       Calendar
                     </Link>
@@ -137,7 +144,7 @@ export default function Navbar() {
                         setProfileOpen(false);
                         logout();
                       }}
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded-b-lg"
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-700 transition"
                     >
                       Logout
                     </button>
@@ -147,10 +154,17 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link to="/login" className="text-gray-300 hover:text-white transition">
+              <Link
+                to="/login"
+                className="text-gray-300 hover:text-white transition"
+              >
                 Login
               </Link>
-              <Link to="/register" className="text-gray-300 hover:text-white transition">
+
+              <Link
+                to="/register"
+                className="text-gray-300 hover:text-white transition"
+              >
                 Register
               </Link>
             </>
