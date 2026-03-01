@@ -181,27 +181,23 @@ export default function Navbar() {
 
     {/* ================= MOBILE PROFILE DRAWER ================= */}
     {profileOpen && (
-  <div className="sm:hidden">
-
+  <>
     {/* Overlay */}
     <div
-      className="fixed inset-0 bg-black/50 z-40"
+      className="fixed inset-0 bg-black/50 z-[100]"
       onClick={() => setProfileOpen(false)}
     />
 
     {/* Drawer */}
-    <div className="fixed top-0 right-0 h-full w-72 bg-gray-900 shadow-2xl z-50 flex flex-col">
-
+    <div className="fixed top-0 right-0 h-full w-72 bg-gray-900 shadow-2xl z-[110]">
       <div className="flex justify-between items-center p-4 border-b border-gray-700">
         <h3 className="text-lg font-semibold">Account</h3>
         <button onClick={() => setProfileOpen(false)}>✕</button>
       </div>
 
-      <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-
+      <div className="p-4 space-y-4">
         <Link
           to="/profile"
-          onClick={() => setProfileOpen(false)}
           className="block p-3 bg-gray-800 rounded-lg"
         >
           Profile
@@ -209,25 +205,20 @@ export default function Navbar() {
 
         <Link
           to="/calendar"
-          onClick={() => setProfileOpen(false)}
           className="block p-3 bg-gray-800 rounded-lg"
         >
           Calendar
         </Link>
 
         <button
-          onClick={() => {
-            setProfileOpen(false);
-            logout();
-          }}
+          onClick={logout}
           className="w-full text-left p-3 bg-red-600 rounded-lg"
         >
           Logout
         </button>
-
       </div>
     </div>
-  </div>
+  </>
 )}
   </nav>
 );
