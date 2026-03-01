@@ -11,7 +11,9 @@ export default function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
 
-  /* Close dropdown when clicking outside */
+  /* ===============================
+     CLOSE DROPDOWN WHEN CLICK OUTSIDE
+  ================================ */
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
@@ -23,7 +25,9 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  /* Fetch unread chat count */
+  /* ===============================
+     FETCH UNREAD CHAT COUNT
+  ================================ */
   useEffect(() => {
     if (!user) return;
 
@@ -44,48 +48,32 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-gray-800 px-4 py-3 relative z-50">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
+    <nav className="bg-gray-800 p-4 relative">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
 
-        {/* LEFT SIDE */}
-        <div className="flex items-center gap-6">
+        {/* LOGO */}
+        <h1 className="text-xl font-bold">
+          <Link to="/">VolunteerHub</Link>
+        </h1>
 
-          <h1 className="text-xl font-bold text-white">
-            <Link to="/">VolunteerHub</Link>
-          </h1>
-
-          {user && (
-            <div className="hidden md:flex items-center gap-4 text-sm">
-              <Link to="/dashboard" className="text-gray-300 hover:text-white">
-                Dashboard
-              </Link>
-
-              <Link to="/opportunities" className="text-gray-300 hover:text-white">
-                Opportunities
-              </Link>
-
-              {user.role === "volunteer" && (
-                <Link
-                  to="/my-applications"
-                  className="text-gray-300 hover:text-white"
-                >
-                  My Applications
-                </Link>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* RIGHT SIDE */}
-        <div className="flex items-center gap-4">
+        {/* MENU */}
+        <div className="flex flex-wrap gap-4 items-center text-sm">
 
           {user ? (
             <>
+              <Link to="/dashboard" className="text-gray-300 hover:text-white transition">
+                Dashboard
+              </Link>
+
+              <Link to="/opportunities" className="text-gray-300 hover:text-white transition">
+                Opportunities
+              </Link>
+
               <button
                 onClick={() => navigate("/chat")}
                 className="relative px-4 py-2 bg-indigo-600 rounded-lg text-white"
               >
-                Chat
+                Community Chat
                 {unread > 0 && (
                   <span className="absolute -top-2 -right-2 bg-red-600 text-xs px-2 py-1 rounded-full">
                     {unread}
@@ -93,9 +81,18 @@ export default function Navbar() {
                 )}
               </button>
 
+              {user.role === "volunteer" && (
+                <Link
+                  to="/my-applications"
+                  className="text-gray-300 hover:text-white transition"
+                >
+                  My Applications
+                </Link>
+              )}
+
               <NotificationBell />
 
-              {/* PROFILE */}
+
               <div className="relative" ref={profileRef}>
                 <div
                   onClick={() => setProfileOpen(prev => !prev)}
@@ -104,24 +101,25 @@ export default function Navbar() {
                   {user?.name?.charAt(0).toUpperCase()}
                 </div>
 
+
                 {profileOpen && (
-                  <div
-                    className="
-                      absolute
-                      right-0
-                      mt-3
-                      w-48
-                      bg-gray-800
-                      rounded-lg
-                      shadow-xl
-                      border border-gray-700
-                      z-50
-                    "
-                  >
+                  <div className="
+      absolute
+      top-12
+      right-2
+      sm:right-0
+      w-44
+      max-w-[calc(100vw-16px)]
+      bg-gray-800
+      rounded-lg
+      shadow-xl
+      border border-gray-700
+      z-50
+    ">
                     <Link
                       to="/profile"
                       onClick={() => setProfileOpen(false)}
-                      className="block px-4 py-2 hover:bg-gray-700"
+                      className="block px-4 py-2 hover:bg-gray-700 rounded-t-lg"
                     >
                       Profile
                     </Link>
@@ -139,7 +137,7 @@ export default function Navbar() {
                         setProfileOpen(false);
                         logout();
                       }}
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-700"
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded-b-lg"
                     >
                       Logout
                     </button>
@@ -149,45 +147,16 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link
-                to="/login"
-                className="text-gray-300 hover:text-white"
-              >
+              <Link to="/login" className="text-gray-300 hover:text-white transition">
                 Login
               </Link>
-
-              <Link
-                to="/register"
-                className="bg-indigo-600 px-4 py-2 rounded-lg text-white"
-              >
+              <Link to="/register" className="text-gray-300 hover:text-white transition">
                 Register
               </Link>
             </>
           )}
         </div>
       </div>
-
-      {/* MOBILE LINKS BELOW (VISIBLE ONLY ON SMALL SCREENS) */}
-      {user && (
-        <div className="md:hidden mt-3 flex flex-col gap-2 text-sm">
-          <Link to="/dashboard" className="text-gray-300 hover:text-white">
-            Dashboard
-          </Link>
-
-          <Link to="/opportunities" className="text-gray-300 hover:text-white">
-            Opportunities
-          </Link>
-
-          {user.role === "volunteer" && (
-            <Link
-              to="/my-applications"
-              className="text-gray-300 hover:text-white"
-            >
-              My Applications
-            </Link>
-          )}
-        </div>
-      )}
     </nav>
   );
 }
