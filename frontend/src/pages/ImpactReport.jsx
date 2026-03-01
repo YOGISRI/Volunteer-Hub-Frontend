@@ -19,8 +19,20 @@ export default function ImpactReport() {
     }, [user]);
 
     const fetchImpactData = async () => {
-        const res = await api.get(`/users/${user.id}/impact-report`);
-        setReport(res.data);
+        try {
+            const hoursRes = await api.get(`/impact/${user.id}/hours`);
+            const ratingRes = await api.get(`/impact/${user.id}/rating`);
+
+            setReport({
+                totalHours: hoursRes.data.totalHours || 0,
+                totalOpportunities: hoursRes.data.history?.length || 0,
+                totalOrganizations: 0, // Not available in current backend
+                averageRating: ratingRes.data.score || 0
+            });
+
+        } catch (err) {
+            console.error("Impact fetch error:", err);
+        }
     };
     const shareText = `
 I have contributed ${report.totalHours} hours across 
