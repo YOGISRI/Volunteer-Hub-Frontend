@@ -145,55 +145,6 @@ export default function Navbar() {
           )}
         </div>
       </div>
-
-      {/* ===============================
-               MOBILE SLIDE PANEL
-            ================================ */}
-      {profileOpen && (
-        <>
-          {/* Overlay */}
-          <div
-            onClick={() => setProfileOpen(false)}
-            className="fixed inset-0 bg-black/50 z-40 sm:hidden"
-          />
-
-          {/* Slide Drawer */}
-          <div className="fixed top-0 right-0 h-full w-72 bg-gray-900 shadow-2xl z-50 sm:hidden">
-            <div className="flex justify-between items-center p-4 border-b border-gray-700">
-              <h3 className="text-lg font-semibold">Account</h3>
-              <button onClick={() => setProfileOpen(false)}>✕</button>
-            </div>
-
-            <div className="p-4 space-y-4">
-              <Link
-                to="/profile"
-                onClick={() => setProfileOpen(false)}
-                className="block p-3 rounded-lg bg-gray-800 hover:bg-gray-700"
-              >
-                Profile
-              </Link>
-
-              <Link
-                to="/calendar"
-                onClick={() => setProfileOpen(false)}
-                className="block p-3 rounded-lg bg-gray-800 hover:bg-gray-700"
-              >
-                Calendar
-              </Link>
-
-              <button
-                onClick={() => {
-                  setProfileOpen(false);
-                  logout();
-                }}
-                className="w-full text-left p-3 rounded-lg bg-red-600 hover:bg-red-700"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </>
-      )}
     </nav>
   );
 }
