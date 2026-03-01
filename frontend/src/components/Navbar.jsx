@@ -103,19 +103,7 @@ export default function Navbar() {
 
 
                 {profileOpen && (
-                  <div className="
-      absolute
-      top-12
-      right-2
-      sm:right-0
-      w-44
-      max-w-[calc(100vw-16px)]
-      bg-gray-800
-      rounded-lg
-      shadow-xl
-      border border-gray-700
-      z-50
-    ">
+                  <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-lg shadow-lg z-20">
                     <Link
                       to="/profile"
                       onClick={() => setProfileOpen(false)}
