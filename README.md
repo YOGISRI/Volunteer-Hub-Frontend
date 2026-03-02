@@ -65,6 +65,7 @@ Follow these steps to run the project locally:
 ```bash
 git clone https://github.com/YOGISRI/Volunteer-Hub-Frontend.git
 cd Volunteer-Hub-Frontend
+cd frontend
 ```
 ### 2️⃣ Install Dependencies
 
@@ -75,10 +76,10 @@ npm install
 Create a .env file in the root directory and add:
 VITE_API_URL=https://volunteer-hub-backend.onrender.com
 
-### Deployment Link : https://volunteer-hub-frontend.vercel.app/
+### Deployment Link: https://volunteer-hub-frontend.vercel.app/
 
 ### Login Credentials
-e-mail:admin@gmail.com
-password:seetha@123
+e-mail: admin@gmail.com
+password: seetha@123
 
 ### Video Walkthrough Link: https://youtu.be/upx86v-dTH0
